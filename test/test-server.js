@@ -6,11 +6,13 @@ var should = chai.should();
 chai.use(chaiHttp);
 
 describe('The api', function() {
-    it('should just work', function(done){
+    it('should return events with get /events', function(done){
         chai.request(server)
-            .get('/')
+            .get('/api/events')
             .end(function (err, res) {
                 res.should.have.status(200);
+                res.should.be.json;
+                res.body.should.be.a('array');
                 done();
             });
     });
