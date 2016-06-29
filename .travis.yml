@@ -11,3 +11,4 @@ deploy:
   app: ucla-events
   on:
     repo: mitrikyle/ucla-events
+  skip_cleanup: true
