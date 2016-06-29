@@ -10,7 +10,8 @@ router.get('/events', function(req, res, next) {
     .limit('10')
     .query('*')
   .then(function (events) {
-    res.status(200).json(events);
+    console.log("EVENTS: ", events.body);
+    res.status(200).json(events.body);
   })
   .fail(function (err) {
     console.log(err);
