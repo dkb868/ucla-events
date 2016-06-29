@@ -1,7 +1,10 @@
 language: node_js
 node_js:
-    - "node"
+- node
 before_script:
-    - npm install -g mocha
-
+- npm install -g mocha
 script: mocha
+deploy:
+  provider: heroku
+  api_key:
+    secure: nwtQUs72a5mdh+Tg1Sh+CR/kfoY/xRIp3uL3HRS3boIADjsEdgU58pXAhXnR7XMpuMrD6Dra7oeQu6szj/y39HdVe+TXWtLiNOzvLNBaTa5DRLjFGn9oS9uoe9/tbpvon7JLHhodqM5JC/6WaiGfcUayiK9kuXlizIor92O3MkEAx6N855cvOAZf1yjmqKvfI1UjMnPAomN4QgR//XxObyuKrjt/wckARbYpfmZTH/8aj6J8kVKcLoI2+/hAxz8axa3BYecokw3oqjQtUNi8ib9QZLHzyVrarrBGnMLxbuDtsU8jUPi6emKnQzGwYEsj2apPqGHiWMRT7OzGlskm2WImnJld+Dz0geO/Be2WrnJNjaizDZ10qFKu3Oy/xWate4x0iFlfUDMrCaS2m1BQWXczve85ZCL4b8pG70P3FZ24ydbjZBHORdSO42gQL8KSa5QZIPmzILQiX/dbF0tQYgAonh193DEi7ElxYyhhj5Z8D7FUvDXF6EjKgHvgSxKjcy06qmqqZ1Nn+yY6TgsjYlaSBBZY00gx9LQrFdWcBd043oRqb53ftGM29Razy9sYtG0/BhLx/q7svyjF7Tv/N6igPoRILbMzOQuJoMqXafEf/6i112wwRQ4RBDkgBqBjKYJYUYpZ2Gz5q1QMXt9v+JwBnw6dicGAAX9AQgbaXRA=
