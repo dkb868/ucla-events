@@ -10,10 +10,9 @@ describe('The api', function() {
         chai.request(server)
             .get('/api/events')
             .end(function (err, res) {
-                console.log(res.body.results);
                 res.should.have.status(200);
                 res.should.be.json;
-                res.body.results.should.be.a('array');
+                res.body.should.be.a('array');
                 done();
             });
     });

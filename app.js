@@ -11,6 +11,9 @@ var api = require('./routes/api');
 
 var app = express();
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://admin:admin@ds011775.mlab.com:11775/ucla-events-test')
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
