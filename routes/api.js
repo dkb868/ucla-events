@@ -35,5 +35,43 @@ router.post('/events', function (req, res, next) {
   })
 });
 
+/* routes for a particular event id */
+router.route('/events/:eventId')
+
+  // get the event with that id
+  .get(function (req,res) {
+    Event.findById(req.params.eventId, function (err, event) {
+      if (!err) {
+        res.status(200).json(event);
+      } else {
+        res.status(500).json(err);
+      }
+    })
+  })
+
+  // update the event with this id
+  // TODO
+  .put(function (req,res) {
+    Event.findOneAndUpdate({_id: req.params.eventId}, {$set:{}}, function (err, event) {
+      if (!err) {
+        console.log("success");
+      } else {
+        console.log(err);
+      }
+    })
+  })
+
+  .delete(function (req,res) {
+    Event.findByIdAndRemove(req.params.eventId, function (err) {
+      if (!err) {
+        console.log("sucess");
+      } else {
+        console.error(err);
+      }
+    })
+  });
+
+
+
 
 module.exports = router;
