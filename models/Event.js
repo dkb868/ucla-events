@@ -8,6 +8,7 @@ var EventSchema = new Schema({
     location: String,
     details: String,
     url: String,
+    tags: [String]
 });
 
 module.exports = Event = mongoose.model('Event', EventSchema);
