@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var Event = require('../models/Event')
+var Tag = require('../models/Tag')
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'CONTONIUEOSUBITCH' });
@@ -16,8 +18,50 @@ router.get('/test', function (req,res) {
   event.url = "http://www.facebook.com";
   event.tags = ["weed", "sports", "premed"]
   event.save(function (err, newEvent) {
-    res.json({message: "Successfully created event"});
-  })
+    Tag.findOrCreate({name: "weed"}, function (err, tag, created) {
+      if (!err) {
+        tag.events.push(newEvent.id);
+        tag.save(function (err, savedTag) {
+          if (!err) {
+              Tag.findOrCreate({name: "sports"}, function (err, tag, created) {
+                if (!err) {
+                  tag.events.push(newEvent.id);
+                  tag.save(function (err, savedTag) {
+                    if (!err) {
+                        Tag.findOrCreate({name: "premed"}, function (err, tag, created) {
+                          if (!err) {
+                            tag.events.push(newEvent.id);
+                            tag.save(function (err, savedTag) {
+                              if (!err) {
+                                  res.status(200).json({message: "Successfully created event and tag"});
+                              } else {
+                                res.status(500).json({message: "Failure"});
+                              }
+                            })
+
+                          } else {
+                            res.status(500).json({message: "Failure"});
+                          }
+                        });
+                    } else {
+                      res.status(500).json({message: "Failure"});
+                    }
+                  })
+
+                } else {
+                  res.status(500).json({message: "Failure"});
+                }
+              });
+          } else {
+            res.status(500).json({message: "Failure"});
+          }
+        })
+
+      } else {
+        res.status(500).json({message: "Failure"});
+      }
+    });
+  });
 });
 
 module.exports = router;

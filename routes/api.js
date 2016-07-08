@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var Event = require('../models/Event')
+var Tag = require('../models/Tag')
+
 
 /* GET events. */
 router.get('/events', function(req, res, next) {
@@ -70,6 +72,27 @@ router.route('/events/:eventId')
       }
     })
   });
+
+  /* routes for a particular tag */
+  router.route('/tag/:tagName')
+
+    .get(function (req,res) {
+      Tag.findOne({name: req.params.tagName})
+        .populate("events")
+        .exec(function (err, tag) {
+          if (tag) {
+            res.status(200).json({
+              events: tag.events,
+              message: "Success",
+            });
+          } else {
+            res.status(401).json({
+              events: [],
+              message: "Failed request",
+            });
+          }
+        });
+    });
 
 
 

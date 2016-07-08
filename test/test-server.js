@@ -16,4 +16,15 @@ describe('The api', function() {
                 done();
             });
     });
+
+    it('should return all events of a particular tag with api/tag/tagName', function (done) {
+        chai.request(server)
+            .get('/api/tag/weed')
+            .end(function (err, res) {
+                res.should.have.status(200);
+                res.should.be.json;
+                res.body.events.should.be.a('array');
+                done();
+            });
+    })
 });
