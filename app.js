@@ -12,7 +12,11 @@ var api = require('./routes/api');
 var app = express();
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://admin:admin@ds011775.mlab.com:11775/ucla-events-test')
+if (process.env.NODE_ENV=='production'){
+  mongoose.connect('mongodb://admin:admin@ds051655.mlab.com:51655/ucla-events-prod');
+} else {
+  mongoose.connect('mongodb://admin:admin@ds011775.mlab.com:11775/ucla-events-test');
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
