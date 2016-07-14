@@ -12,7 +12,7 @@ router.get('/events', function(req, res, next) {
     }
     else {
       console.log(err);
-      res.status(500).json(err);
+      res.status(500).json([]);
     }
  });
 });
@@ -81,15 +81,9 @@ router.route('/events/:eventId')
         .populate("events")
         .exec(function (err, tag) {
           if (tag) {
-            res.status(200).json({
-              events: tag.events,
-              message: "Success",
-            });
+            res.status(200).json(tag.events);
           } else {
-            res.status(401).json({
-              events: [],
-              message: "Failed request",
-            });
+            res.status(500).json([]);
           }
         });
     });
