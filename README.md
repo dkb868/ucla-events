@@ -1,4 +1,5 @@
-# ucla-events
+# ucla-events [![Build Status](https://travis-ci.com/mitrikyle/ucla-events.svg?token=4pjpRgWQNr8j1qw1gjL9&branch=master)](https://travis-ci.com/mitrikyle/ucla-events)
+
 
 # Event Model
     title: String,
@@ -40,4 +41,17 @@ returns all events of a particular tag
 - status 200 : Success
 - status 500 : Error
 
-[![Build Status](https://travis-ci.com/mitrikyle/ucla-events.svg?token=4pjpRgWQNr8j1qw1gjL9&branch=master)](https://travis-ci.com/mitrikyle/ucla-events)
+## User routes
+
+#### GET /api/user/[userId]
+returns all events favorited by a user
+- array of events
+- array will be empy if anything goes wrong or if there are no events
+- status 200: Success
+- status 500: Error
+- 
+#### POST /api/user/[userId]/[eventId]
+save the event with id 'eventId' to the user with id 'userId' favorites
+returns json with key 'success'
+- status 200 and 'success': true  -- sucessfuly saved
+- status 500 and 'success': false -- failed to save
