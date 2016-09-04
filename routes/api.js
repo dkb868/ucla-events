@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Event = require('../models/Event')
 var Tag = require('../models/Tag')
+var User = require('../models/User')
 
 
 /* GET events. */
@@ -87,6 +88,48 @@ router.route('/events/:eventId')
           }
         });
     });
+
+
+    // routes for a particular user
+
+    router.route('/user/:fbId')
+
+    .get(function (req, res) {
+      User.findOne({fbId: req.params.fbId})
+        .populate("events")
+        .exec(function (err, user) {
+          if (user) {
+            console.log(user);
+            res.status(200).json(user.events);
+          } else {
+            res.status(500).json([]);
+          }
+        });
+    });
+
+    router.route('/user/:fbId/:eventId')
+
+    .post(function (req,res) {
+      User.findOrCreate({fbId: req.params.fbId}, function (err, user) {
+        if (user) {
+          if (req.params.eventId){
+            user.events.push(req.params.eventId)
+            user.save(function (err, updatedUser) {
+              if (!err) {
+                res.status(200).json({'success': true})
+              } else {
+                res.status(500).json({'success': false})
+              }
+            })
+          } else {
+            res.status(500).json({'success': false})
+          }
+        } else {
+          res.status(500).json({'success': false})
+        }
+      })
+    });
+
 
 
 
