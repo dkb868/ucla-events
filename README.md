@@ -49,7 +49,7 @@ returns all events favorited by a user
 - array will be empy if anything goes wrong or if there are no events
 - status 200: Success
 - status 500: Error
-- 
+
 #### POST /api/user/[userId]/[eventId]
 save the event with id 'eventId' to the user with id 'userId' favorites
 returns json with key 'success'
