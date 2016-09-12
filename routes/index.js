@@ -7,7 +7,7 @@ var Tag = db.models.Tag
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  Event.find({'date': {'$gte': moment().startOf('day').toDate(), '$lt': moment().add(14, 'd').startOf('day').toDate()}}, null, {sort: {date: 1}}, (err, docs) => {
+  Event.find({'date': {'$gte': moment().startOf('day').toDate(), '$lt': moment().add(7, 'd').startOf('day').toDate()}}, null, {sort: {date: 1}}, (err, docs) => {
     if (err) {
       console.log(err)
       res.end(500)
