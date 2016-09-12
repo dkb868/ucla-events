@@ -9,7 +9,7 @@ var EventSchema = new Schema({
   prettyDate: String,
   location: String,
   details: String,
-  url: String,
+  url: {type: String, unique: true},
   tags: [String]
 })
 
