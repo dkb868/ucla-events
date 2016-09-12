@@ -1,0 +1,3 @@
+{
+  "dbURI": "mongodb://admin:admin@ds011775.mlab.com:11775/ucla-events-test"
+}
