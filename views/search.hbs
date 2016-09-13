@@ -57,7 +57,9 @@
     <header class="mdl-layout__header">
       <div class="mdl-layout__header-row">
         <!-- Title -->
-        <span class="mdl-layout-title">UCLA Events</span>
+        <a href="/">
+          <span class="mdl-layout-title">UCLA Events</span>
+        </a>
         <!-- Add spacer, to align navigation to the right -->
         <div class="mdl-layout-spacer"></div>
 
@@ -70,8 +72,6 @@
           <a class="mdl-navigation__link" href="/tag/fraternity">Fraternity</a>
           <a class="mdl-navigation__link" href="/tag/football">Football</a>
         </nav>
-        <div class="mdl-layout-spacer"></div>
-
         <div class="mdl-cell mdl-cell-4-col">
         <form action="/search" method="post">
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
@@ -99,7 +99,7 @@
  </div> -->
     <main class="mdl-layout__content">
       <div class="page-content">
-        <h2 style="text-align:center">Upcoming Events This Week</h2>
+        <h2 style="text-align:center">Upcoming Events with "{{query}}"</h2>
         <div class="events" style="margin:0 auto">
           {{#each events}}
           <li>

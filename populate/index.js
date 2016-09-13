@@ -1,87 +1,145 @@
 const moment = require('moment')
+const utils = require('../utils')
 const db = require('../db')
 const Event = db.models.Event
 const fbGroup = db.models.fbGroup
 const fbPage = db.models.fbPage
 const Tag = db.models.Tag
+const extractor = require('keyword-extractor')
 const FB = require('fb')
-const TOKEN = 'EAACEdEose0cBAHPWYw2hgsZAg7XiadRw69nbZCUJlEfOLDSoHT6FVdnUki0n5YJj2cBfrOCVxB4fhyD9yXy4xi3W4l96DdhHtnaxqs33ZAPEjiNvbYc99lUlh3aYvZADHxDftGGwPVW6ZBw4TtptuExB8q8NwkAYbcG9YdZCp7swZDZD'
+const TOKEN = 'EAACEdEose0cBANE5ZAUuy5T3xoFevaidkU2WVFjIRbixdSWAQZB3wZAeGF0VykdgG6LLpbYO1ZBjNtYuZCFO28lzStOXRjW1PWZBNN6KTf9zTcOn9jahn85850nZC9xs07woIffce6OwmiGNhrz82SXfYqa8oW5waISTcRAzvidGwZDZD'
 FB.options({version: 'v2.7'})
 FB.setAccessToken(TOKEN)
 
-function wordInString (s, word) {
-  return new RegExp('\\b' + word + '\\b', 'i').test(s)
-}
 
-function updateEvents (type) {
+
+function batchFacebook (type, callback) {
   // code to populate events collection from Page events
   type.find({}, (err, docs) => {
     if (err) {
       console.log('Error: ', err)
     } else {
-      docs.forEach((fbpage, i) => {
-        var title, host, date, location, facebook_link, description, isFree, isFood
-
-        setTimeout(function () {
-          FB.api('/' + fbpage.page_id + '/events?&since=yesterday', function (res) {
-            if (!res || res.error) {
-              console.log(!res ? 'error occurred' : res.error)
-              return
-            }
-            host = fbpage.name
-            if (res.data.length) {
-              res.data.forEach(event => {
-                let tags = []
-                console.log('fb api: ', event)
-                title = event.name
-                date = new Date(event.start_time)
-                if (event.place) {
-                  location = event.place.name
-                } else if (event.location) {
-                  location = event.location
-                } else {
-                  location = 'N/A'
-                }
-                facebook_link = 'https://www.facebook.com/events/' + event.id
-                description = event.description
-                // trivial algorithm to determine free food
-                // removed isFreeFood = false
-                isFree = wordInString(description, 'free')
-                isFood = wordInString(description, 'food') || wordInString(title, 'food')
-                if (isFree) tags.push('free')
-                if (isFood) tags.push('food')
-
-                Event.findOrCreate({url: facebook_link}, (err, newEvent) => {
-                  if (err) console.log('error creating event: ', err)
-                  else {
-                    newEvent.title = title
-                    newEvent.host = host
-                    newEvent.date = date
-                    newEvent.prettyDate = moment(date).format('dddd, MMMM D [at] h:mm A')
-                    newEvent.location = location
-                    newEvent.details = description
-                    newEvent.url = facebook_link
-                    // newEvent.tags = tags
-                    newEvent.save((err, e) => {
-                      if (err) console.log('Error in saving event: ', newEvent, err)
-                      else console.log('NEW EVENT: ', e)
-                    })
-                  }
-                })
-              })
-            }
-            console.log(i * 1.0 / docs.length * 100 + '% complete')
-            if (i === docs.length - 1) {
-              return
-            }
-          })
-        }, i * 1050)
-      })
+      docs.forEach(callback)
     }
   })
 }
 
+function getEvents (fbpage, i) {
+    var title, host, date, location, facebook_link, description, isFree, isFood
+
+    setTimeout(function () {
+      FB.api('/' + fbpage.page_id + '/events?&since=yesterday', function (res) {
+        if (!res || res.error) {
+          console.log(!res ? 'error occurred' : res.error)
+          return
+        }
+        host = fbpage.name
+        if (res.data.length) {
+          res.data.forEach(event => {
+            let tags = []
+            // console.log('fb api: ', event)
+            title = event.name
+            date = new Date(event.start_time)
+            if (event.place) {
+              location = event.place.name
+            } else if (event.location) {
+              location = event.location
+            } else {
+              location = 'N/A'
+            }
+            facebook_link = 'https://www.facebook.com/events/' + event.id
+            description = event.description
+
+            Event.findOrCreate({url: facebook_link}, (err, newEvent, created) => {
+              if (err) console.log('error creating event: ', err)
+              else {
+                newEvent.title = title
+                newEvent.host = host
+                newEvent.date = date
+                newEvent.prettyDate = moment(date).format('dddd, MMMM D [at] h:mm A')
+                newEvent.location = location
+                newEvent.details = description
+                newEvent.url = facebook_link
+                if (created) tagify(fbpage, newEvent)
+                // newEvent.tags = tags
+                newEvent.save((err, e) => {
+                  if (err) console.log('Error in saving event: ', newEvent, err)
+                   else console.log('NEW EVENT: ', e)
+                })
+              }
+            })
+          })
+        }
+        console.log('something happened')
+        // console.log(i * 1.0 / docs.length * 100 + '% complete')
+        // if (i === docs.length - 1) {
+        //   return
+        // }
+      })
+    }, i * 1050)
+}
+
+// HACK currently only works for groups, change field to 'about' for pages
+function addDescriptions (fbpage, i) {
+    setTimeout(function () {
+      FB.api('/' + fbpage.page_id + '?fields=description', function (res) {
+        if (!res || res.error) {
+          console.log(!res ? 'error occurred' : res.error)
+          return
+        }
+        console.log(res)
+        fbpage.description = res.description || ''
+        fbpage.save((err, doc) => {
+          if (!err) console.log('saved: ', doc)
+        })
+
+        // console.log(i * 1.0 / docs.length * 100 + '% complete')
+        // if (i === docs.length - 1) {
+        //   return
+        // }
+      })
+    }, i * 1050)
+}
+
+function tagify (fbpage, event) {
+  let combinedString = event.details + ' ' + event.title + ' ' + event.host
+  if (fbpage.description) combinedString += ' ' + fbpage.description
+  let result = extractor.extract(combinedString, {
+    language: 'english',
+    remove_digits: true,
+    return_changed_case: true,
+    return_chained_words: false,
+    remove_duplicates: true
+  })
+
+  result.filter((tagName) => {
+    return tagName !== 'undefined' && tagName !== undefined
+  })
+
+  console.log('RESULT: ' , result)
+
+  event.tags = result
+  event.save((err) => {
+    if (!err) console.log('Succesfully saved event')
+  })
+
+  result.forEach((tagName) => {
+    Tag.findOrCreate({name: tagName}, (err, tag) => {
+      if (err) console.log(err)
+      else {
+        tag.events.push(event.id)
+        tag.save((err) => {
+          if (!err) console.log('Successfully saved tag')
+        })
+      }
+    })
+  })
+}
+
 module.exports = function () {
-  updateEvents(fbPage)
-  updateEvents(fbGroup)
+  batchFacebook(fbPage, getEvents)
+  batchFacebook(fbGroup, getEvents)
+  //  batchFacebook(fbGroup, addDescriptions)
+  // batchFacebook(fbGroup, getEvents)
+  // batchFacebook(fbGroup, addDescriptions)
 }
