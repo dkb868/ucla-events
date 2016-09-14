@@ -41,20 +41,6 @@ router.get('/tag/:tagName', (req, res, next) => {
   })
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // router.get('/test', function (req, res) {
 //   var event = new Event()
 //   event.title = 'Test Event'

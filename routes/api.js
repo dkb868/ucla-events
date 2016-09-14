@@ -90,26 +90,11 @@ router.route('/tag/:tagName')
 
 // routes for a particular user
 
-router.route('/user/:fbId')
 
-  .get(function (req, res) {
-    User.findOne({fbId: req.params.fbId})
-      .populate('events')
-      .exec(function (err, user) {
-        if (user) {
-          console.log(user)
-          res.status(200).json(user.events)
-        } else {
-          res.status(500).json([])
-        }
-      })
-  })
-
-router.route('/user/:fbId/:eventId')
-
-  .post(function (req, res) {
+router.post('/user/:fbId/:eventId', function (req, res) {
     User.findOrCreate({fbId: req.params.fbId}, function (err, user) {
       if (user) {
+        console.log('got here')
         if (req.params.eventId) {
           user.events.push(req.params.eventId)
           user.save(function (err, updatedUser) {
@@ -126,6 +111,19 @@ router.route('/user/:fbId/:eventId')
         res.status(500).json({'success': false})
       }
     })
+  })
+
+router.get('/user/:fbId', function (req, res) {
+    User.findOne({fbId: req.params.fbId})
+      .populate('events')
+      .exec(function (err, user) {
+        if (user) {
+          console.log(user)
+          res.status(200).json(user.events)
+        } else {
+          res.status(500).json([])
+        }
+      })
   })
 
 module.exports = router
