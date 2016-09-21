@@ -9,7 +9,7 @@ const moment = require('moment')
 
 /* GET events. */
 router.get('/events', function (req, res, next) {
-  Event.find({}, null, function (err, events) {
+  Event.find({'date': {'$gte': moment().startOf('day').toDate(), '$lt': moment().add(7, 'd').startOf('day').toDate()}}, null, {sort: {date: 1}}, function (err, events) {
     if (!err) {
       res.status(200).json(events)
     }else {
