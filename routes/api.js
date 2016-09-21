@@ -128,7 +128,7 @@ router.get('/user/:fbId', function (req, res) {
       })
   })
 
-router.post('/search/:query', (req, res, next) => {
+router.get('/search/:query', (req, res, next) => {
   let keyWords = req.params.query.split(' ')
   console.log(keyWords);
   Event.find({'date': {'$gte': moment().startOf('day').toDate()}, tags: { $in: keyWords}}, null, {sort: {date: 1}}, (err, docs) => {
