@@ -4,6 +4,8 @@ const db = require('../db')
 var Event = db.models.Event
 var Tag = db.models.Tag
 var User = db.models.User
+const moment = require('moment')
+
 
 /* GET events. */
 router.get('/events', function (req, res, next) {
@@ -125,5 +127,18 @@ router.get('/user/:fbId', function (req, res) {
         }
       })
   })
+
+router.post('/search/:query', (req, res, next) => {
+  let keyWords = req.params.query.split(' ')
+  console.log(keyWords);
+  Event.find({'date': {'$gte': moment().startOf('day').toDate()}, tags: { $in: keyWords}}, null, {sort: {date: 1}}, (err, docs) => {
+    if (err) {
+      console.log('err')
+      res.status(500).json([])
+    } else {
+      res.status(200).json(docs)
+    }
+  })
+})
 
 module.exports = router
